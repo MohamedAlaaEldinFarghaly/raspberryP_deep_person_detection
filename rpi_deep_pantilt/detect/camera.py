@@ -17,20 +17,20 @@ logging.basicConfig()
 
 # https://github.com/dtreskunov/rpi-sensorium/commit/40c6f3646931bf0735c5fe4579fa89947e96aed7
 
-"""
+
 def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resolution=RESOLUTION):
 
     model = model_cls()
 
-    capture_manager = PiCameraStream(resolution=resolution, rotation=rotation)
+    capture_manager = WebcamVideoStream(resolution=RESOLUTION)     ###
     capture_manager.start()
-    capture_manager.start_overlay()
+    #capture_manager.start_overlay()
 
     label_idxs = model.label_to_category_index(labels)
     start_time = time.time()
     fps_counter = 0
     while not capture_manager.stopped:
-        if capture_manager.frame is not None:
+        if capture_manager.grabbed:                     ###
             frame = capture_manager.read()         
             prediction = model.predict(frame)
 
@@ -61,14 +61,14 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
                     f'Tracking {display_name} center_x {x} center_y {y}')
 
             overlay = model.create_overlay(frame, prediction)
-            capture_manager.overlay_buff = overlay
+            print(type(overlay))
+            #capture_manager.overlay_buff = overlay
             if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                 fps_counter += 1
                 fps = fps_counter / (time.time() - start_time)
                 logging.debug(f'FPS: {fps}')
                 fps_counter = 0
                 start_time = time.time()
-"""
 
 def run_stationary_detect(labels, model_cls, rotation):
     '''
