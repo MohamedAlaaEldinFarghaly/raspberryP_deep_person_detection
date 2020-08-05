@@ -5,7 +5,7 @@ import picamera
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import numpy as np
-
+import cv2  #MAF
 from threading import Thread
 
 logging.basicConfig()
@@ -17,12 +17,9 @@ logging.basicConfig()
 
 # https://github.com/dtreskunov/rpi-sensorium/commit/40c6f3646931bf0735c5fe4579fa89947e96aed7
 
-
+"""
 def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resolution=RESOLUTION):
-    '''
-        Updates center_x and center_y coordinates with centroid of detected class's bounding box
-        Overlay is only rendered around the tracked object
-    '''
+
     model = model_cls()
 
     capture_manager = PiCameraStream(resolution=resolution, rotation=rotation)
@@ -71,7 +68,7 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
                 logging.debug(f'FPS: {fps}')
                 fps_counter = 0
                 start_time = time.time()
-
+"""
 
 def run_stationary_detect(labels, model_cls, rotation):
     '''
@@ -79,9 +76,9 @@ def run_stationary_detect(labels, model_cls, rotation):
     '''
     model = model_cls()
 
-    capture_manager = PiCameraStream(resolution=RESOLUTION, rotation=rotation)
+    capture_manager = WebcamVideoStream(resolution=RESOLUTION)
     capture_manager.start()
-    capture_manager.start_overlay()
+    #capture_manager.start_overlay()
 
     label_idxs = model.label_to_category_index(labels)
     start_time = time.time()
@@ -89,7 +86,7 @@ def run_stationary_detect(labels, model_cls, rotation):
 
     try:
         while not capture_manager.stopped:
-            if capture_manager.frame is not None:
+            if capture_manager.grabbed:
                 frame = capture_manager.read()
                 prediction = model.predict(frame)
 
@@ -106,7 +103,8 @@ def run_stationary_detect(labels, model_cls, rotation):
                         filtered_prediction = prediction
 
                     overlay = model.create_overlay(frame, filtered_prediction)
-                    capture_manager.overlay_buff = overlay
+                    print(type(overlay))
+                    #capture_manager.overlay_buff = overlay
 
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
@@ -117,7 +115,46 @@ def run_stationary_detect(labels, model_cls, rotation):
     except KeyboardInterrupt:
         capture_manager.stop()
 
+        
+class WebcamVideoStream:
+	def __init__(self, src=0, name="WebcamVideoStream",resolution=(320,320)):
+		# initialize the video camera stream and read the first frame
+		# from the stream
+		self.stream = cv2.VideoCapture(src)
+		(self.grabbed, self.frame) = self.stream.read()
 
+		# initialize the thread name
+		self.name = name
+
+		# initialize the variable used to indicate if the thread should
+		# be stopped
+		self.stopped = False
+
+	def start(self):
+		# start the thread to read frames from the video stream
+		t = Thread(target=self.update, name=self.name, args=())
+		t.daemon = True
+		t.start()
+		return self
+
+	def update(self):
+		# keep looping infinitely until the thread is stopped
+		while True:
+			# if the thread indicator variable is set, stop the thread
+			if self.stopped:
+				return
+
+			# otherwise, read the next frame from the stream
+			(self.grabbed, self.frame) = self.stream.read()
+
+	def read(self):
+		# return the frame most recently read
+		return cv2.resize(self.frame,resolution)
+
+	def stop(self):
+		# indicate that the thread should be stopped
+		self.stopped = True
+"""
 def _monkey_patch_picamera(overlay):
     original_send_buffer = picamera.mmalobj.MMALPortPool.send_buffer
 
@@ -134,16 +171,6 @@ def _monkey_patch_picamera(overlay):
 
 
 class PiCameraStream(object):
-    """
-      Continuously capture video frames, and optionally render with an overlay
-
-      Arguments
-      resolution - tuple (x, y) size 
-      framerate - int 
-      vflip - reflect capture on x-axis
-      hflip - reflect capture on y-axis
-
-    """
 
     def __init__(self,
                  resolution=(320, 240),
@@ -210,3 +237,4 @@ class PiCameraStream(object):
 
     def stop(self):
         self.stopped = True
+"""
