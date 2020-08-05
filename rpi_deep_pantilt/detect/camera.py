@@ -123,7 +123,8 @@ class WebcamVideoStream:
 		self.stream = cv2.VideoCapture(src)
 		(self.grabbed, self.frame) = self.stream.read()
         self.resolution = resolution
-		# initialize the thread name
+        
+        # initialize the thread name
 		self.name = name
 
 		# initialize the variable used to indicate if the thread should
