@@ -34,7 +34,7 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
     fps_counter = 0
     while not capture_manager.stopped:
         if capture_manager.frame is not None:
-            frame = capture_manager.read()
+            frame = capture_manager.read()         
             prediction = model.predict(frame)
 
             if not len(prediction.get('detection_boxes')):
@@ -154,25 +154,25 @@ class PiCameraStream(object):
                  max_workers=2
                  ):
 
-        self.camera = PiCamera()
-        self.camera.resolution = resolution
-        self.camera.framerate = framerate
-        self.camera.vflip = vflip
-        self.camera.hflip = hflip
-        self.camera.rotation = rotation
+        self.camera = PiCamera()                ###
+        self.camera.resolution = resolution     ###
+        self.camera.framerate = framerate       ###
+        self.camera.vflip = vflip               ###
+        self.camera.hflip = hflip               ###
+        self.camera.rotation = rotation         ###
         self.overlay = None
 
-        self.data_container = PiRGBArray(self.camera, size=resolution)
+        self.data_container = PiRGBArray(self.camera, size=resolution)      ###
 
         self.stream = self.camera.capture_continuous(
             self.data_container, format="rgb", use_video_port=True
-        )
+        )                                                                   ###
 
         self.overlay_buff = None
         self.frame = None
         self.stopped = False
         logging.info('starting camera preview')
-        self.camera.start_preview()
+        self.camera.start_preview()                                         ###
 
     def render_overlay(self):
         while True:
@@ -181,7 +181,7 @@ class PiCameraStream(object):
             elif not self.overlay and self.overlay_buff:
                 self.overlay = self.camera.add_overlay(
                     self.overlay_buff, layer=3, size=self.camera.resolution)
-                _monkey_patch_picamera(self.overlay)
+                _monkey_patch_picamera(self.overlay)                        ###
 
     def start_overlay(self):
         Thread(target=self.render_overlay, args=()).start()
@@ -202,7 +202,7 @@ class PiCameraStream(object):
             if self.stopped:
                 self.stream.close()
                 self.data_container.close()
-                self.camera.close()
+                self.camera.close()                                         ###
                 return
 
     def read(self):
