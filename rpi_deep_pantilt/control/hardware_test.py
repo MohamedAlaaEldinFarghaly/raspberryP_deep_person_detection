@@ -4,24 +4,32 @@ import time
 
 import pantilthat
 from picamera import PiCamera
-
+import cv2 #MAF
 
 # https://github.com/pimoroni/pantilt-hat/blob/master/examples/smooth.py
 
 
 def camera_test(rotation):
-    camera = PiCamera()
-    camera.rotation = rotation
+    
+    #camera = PiCamera()
+    #camera.rotation = rotation
+    camera = cv2.VideoCapture(0)
     logging.info('Starting Raspberry Pi Camera')
-    camera.start_preview()
+    #camera.start_preview()
 
     try:
         while True:
-            continue
+            ret, frame = camera.read()
+            cv2.imshow("Feed", frame)
+            cv2.waitKey(1)
+            
+            #continue
     except KeyboardInterrupt:
         logging.info('Stopping Raspberry Pi Camera')
-        camera.stop_preview()
-
+        cv2.destroyWindow("Feed")
+        camera.release()
+        #camera.stop_preview()
+    
 
 def pantilt_test():
     logging.info('Starting Pan-Tilt HAT test!')
