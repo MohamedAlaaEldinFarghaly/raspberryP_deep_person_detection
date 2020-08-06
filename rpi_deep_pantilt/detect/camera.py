@@ -14,6 +14,7 @@ import picamera
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import numpy as np
+from PIL import Image # MAF
 import cv2  # MAF
 from threading import Thread
 
@@ -70,6 +71,7 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
 
             overlay = model.create_overlay(frame, prediction)
             print(type(overlay))
+            print("why?!")
             # capture_manager.overlay_buff = overlay
             if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                 fps_counter += 1
@@ -113,11 +115,11 @@ def run_stationary_detect(labels, model_cls, rotation):
 
                     overlay = model.create_overlay(frame, filtered_prediction)
                     capture_manager.overlay = overlay
+                    print(label_idxs)
 
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
-                    print("why?!")
                     logging.debug(f'FPS: {fps}')
 
                     fps_counter = 0
@@ -184,7 +186,6 @@ class WebcamVideoStream:
     def read(self):
         # return the frame most recently read
         self.resized = cv2.resize(self.frame, (320, 320))
-        print(type(self.frame))
         return self.resized
 
     def stop(self):
