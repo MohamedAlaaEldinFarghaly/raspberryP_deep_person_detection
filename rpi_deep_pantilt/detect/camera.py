@@ -117,15 +117,16 @@ def run_stationary_detect(labels, model_cls, rotation):
 
         
 class WebcamVideoStream:
-	def __init__(self, src=0, name="WebcamVideoStream",resolution=(320,320)):
+	def __init__(self, src=0, name="WebcamVideoStream",resolution=(320,320) ):
 		# initialize the video camera stream and read the first frame
 		# from the stream
 		self.stream = cv2.VideoCapture(src)
 		(self.grabbed, self.frame) = self.stream.read()
-    self.resolution = resolution
         
         # initialize the thread name
 		self.name = name
+    
+    self.resolution = resolution
 
 		# initialize the variable used to indicate if the thread should
 		# be stopped
