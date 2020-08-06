@@ -32,7 +32,7 @@ logging.basicConfig()
 def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resolution=RESOLUTION):
     model = model_cls()
 
-    capture_manager = WebcamVideoStream()
+    capture_manager = WebcamVideoStream('test.mkv')
     capture_manager.start()
     capture_manager.start_overlay()
 
@@ -89,7 +89,7 @@ def run_stationary_detect(labels, model_cls, rotation):
     '''
     model = model_cls()
 
-    capture_manager = WebcamVideoStream()
+    capture_manager = WebcamVideoStream('test.mkv')
     capture_manager.start()
     capture_manager.start_overlay()
 
