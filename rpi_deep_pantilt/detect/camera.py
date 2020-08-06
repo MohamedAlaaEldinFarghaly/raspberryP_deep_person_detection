@@ -14,7 +14,7 @@ import time
 # from picamera.array import PiRGBArray
 # from picamera import PiCamera
 import numpy as np
-from PIL import Image # MAF
+from PIL import Image  # MAF
 import cv2  # MAF
 from threading import Thread
 
@@ -32,15 +32,15 @@ logging.basicConfig()
 def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resolution=RESOLUTION):
     model = model_cls()
 
-    capture_manager = WebcamVideoStream()  ###
+    capture_manager = WebcamVideoStream()
     capture_manager.start()
-    # capture_manager.start_overlay()
+    capture_manager.start_overlay()
 
     label_idxs = model.label_to_category_index(labels)
     start_time = time.time()
     fps_counter = 0
     while not capture_manager.stopped:
-        if capture_manager.grabbed:  ###
+        if capture_manager.grabbed:
             frame = capture_manager.read()
             prediction = model.predict(frame)
 
@@ -70,10 +70,12 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
                     f'Tracking {display_name} center_x {x} center_y {y}')
 
             overlay = model.create_overlay(frame, prediction)
-            print("why?!")
-            capture_manager.overlay_buff = overlay
-            print("func1")
-            if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
+
+            im = Image.frombytes("RGB", (320, 320), overlay)
+            np_image = np.array(im)
+            capture_manager.overlay = np_image
+            #LOGLEVEL is logging.DEBUG and
+            if  (time.time() - start_time) > 1:
                 fps_counter += 1
                 fps = fps_counter / (time.time() - start_time)
                 logging.debug(f'FPS: {fps}')
@@ -116,14 +118,12 @@ def run_stationary_detect(labels, model_cls, rotation):
                     overlay = model.create_overlay(frame, filtered_prediction)
                     im = Image.frombytes("RGB", (320, 320), overlay)
                     np_image = np.array(im)
-
-                    print(np.shape(capture_manager.overlay))
                     capture_manager.overlay = np_image
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
                     logging.debug(f'FPS: {fps}')
-                    print(fps)
+
                     fps_counter = 0
                     start_time = time.time()
     except KeyboardInterrupt:
@@ -131,22 +131,21 @@ def run_stationary_detect(labels, model_cls, rotation):
 
 
 class WebcamVideoStream:
-    def __init__(self, src=0, name="WebcamVideoStream"):
+    def __init__(self, src=0):
         # initialize the video camera stream and read the first frame
         # from the stream
         self.stream = cv2.VideoCapture(src)
         (self.grabbed, self.frame) = self.stream.read()
 
-        # initialize the thread name
-        self.name = name
         # initialize the variable used to indicate if the thread should
         # be stopped
         self.stopped = False
         self.overlay = None
         self.resized = None
+
     def start(self):
         # start the thread to read frames from the video stream
-        t = Thread(target=self.update, name=self.name, args=())
+        t = Thread(target=self.update, args=())
         t.daemon = True
         t.start()
 
@@ -154,7 +153,7 @@ class WebcamVideoStream:
 
     def start_overlay(self):
         # start the thread to display frames from the video stream
-        t = Thread(target=self.display, name=self.name, args=())
+        t = Thread(target=self.display, args=())
         t.daemon = True
         t.start()
 
