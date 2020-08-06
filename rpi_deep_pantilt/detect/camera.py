@@ -70,7 +70,6 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
                     f'Tracking {display_name} center_x {x} center_y {y}')
 
             overlay = model.create_overlay(frame, prediction)
-            print(type(overlay))
             print("why?!")
             capture_manager.overlay_buff = overlay
             print("func1")
@@ -116,13 +115,16 @@ def run_stationary_detect(labels, model_cls, rotation):
 
                     overlay = model.create_overlay(frame, filtered_prediction)
                     capture_manager.overlay = overlay
+                    im = Image.frombytes("RGB", (320, 320), overlay)
+                    np_image = np.array(im)
                     print("func2")
-
+                    print(type(overlay))
+                    print(type(np_image))
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
                     logging.debug(f'FPS: {fps}')
-
+                    print(fps)
                     fps_counter = 0
                     start_time = time.time()
     except KeyboardInterrupt:
@@ -181,7 +183,7 @@ class WebcamVideoStream:
                 return
 
             # otherwise, read the next frame from the stream
-            cv2.imshow("Feed", self.overlay)
+            cv2.imshow("Feed", self.frame)
             cv2.waitKey(1)
 
     def read(self):
