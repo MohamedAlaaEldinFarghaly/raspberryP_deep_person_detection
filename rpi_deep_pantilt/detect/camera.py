@@ -126,67 +126,67 @@ def run_stationary_detect(labels, model_cls, rotation):
 
         
 class WebcamVideoStream:
-	def __init__(self, src=0, name="WebcamVideoStream" ):
-		# initialize the video camera stream and read the first frame
-		# from the stream
-		self.stream = cv2.VideoCapture(src)
-		(self.grabbed, self.frame) = self.stream.read()
+    def __init__(self, src=0, name="WebcamVideoStream" ):
+        # initialize the video camera stream and read the first frame
+        # from the stream
+        self.stream = cv2.VideoCapture(src)
+        (self.grabbed, self.frame) = self.stream.read()
         
         # initialize the thread name
-		self.name = name
-		# initialize the variable used to indicate if the thread should
-		# be stopped
-		self.stopped = False
+        self.name = name
+        # initialize the variable used to indicate if the thread should
+        # be stopped
+        self.stopped = False
 
-	def start(self):
-		# start the thread to read frames from the video stream
-		t = Thread(target=self.update, name=self.name, args=())
-		t.daemon = True
-		t.start()
+    def start(self):
+        # start the thread to read frames from the video stream
+        t = Thread(target=self.update, name=self.name, args=())
+        t.daemon = True
+        t.start()
         
-		return self
-    
-	def start_overlay(self):
-		# start the thread to display frames from the video stream
-		t = Thread(target=self.display, name=self.name, args=())
-		t.daemon = True
-		t.start()
-        
-		logging.debug('Starting Raspberry Pi usb Camera')
         return self
     
-	def update(self):
-		# keep looping infinitely until the thread is stopped
-		while True:
-			# if the thread indicator variable is set, stop the thread
-			if self.stopped:
-				return
+    def start_overlay(self):
+        # start the thread to display frames from the video stream
+        t = Thread(target=self.display, name=self.name, args=())
+        t.daemon = True
+        t.start()
+        
+        logging.debug('Starting Raspberry Pi usb Camera')
+        return self
+    
+    def update(self):
+        # keep looping infinitely until the thread is stopped
+        while True:
+            # if the thread indicator variable is set, stop the thread
+            if self.stopped:
+                return
 
-			# otherwise, read the next frame from the stream
-			(self.grabbed, self.frame) = self.stream.read()
+            # otherwise, read the next frame from the stream
+            (self.grabbed, self.frame) = self.stream.read()
             
-	def display(self):
-		# keep looping infinitely until the thread is stopped
-		while True:
-			# if the thread indicator variable is set, stop the thread
-			if self.stopped:
+    def display(self):
+        # keep looping infinitely until the thread is stopped
+        while True:
+            # if the thread indicator variable is set, stop the thread
+            if self.stopped:
                 logging.debug('Stopping Raspberry Pi usb Camera')
                 cv2.destroyWindow("Feed")
                 self.stream.release()
-				return
+                return
 
-			# otherwise, read the next frame from the stream
-			cv2.imshow("Feed", self.frame)
+            # otherwise, read the next frame from the stream
+            cv2.imshow("Feed", self.frame)
             cv2.waitKey(1)
             
-	def read(self):
-		# return the frame most recently read
+    def read(self):
+        # return the frame most recently read
         self.resized =  cv2.resize(self.frame,(320,320))
-		return self.resized
+        return self.resized
 
-	def stop(self):
-		# indicate that the thread should be stopped
-		self.stopped = True
+    def stop(self):
+        # indicate that the thread should be stopped
+        self.stopped = True
 """
 def _monkey_patch_picamera(overlay):
     original_send_buffer = picamera.mmalobj.MMALPortPool.send_buffer
