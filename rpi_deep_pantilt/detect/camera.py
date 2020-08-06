@@ -182,11 +182,11 @@ class WebcamVideoStream:
                 return
 
             # otherwise, read the next frame from the stream
-            if self.overlay:
+            if self.overlay is not None:
                 cv2.imshow("Feed", self.overlay)
                 cv2.waitKey(1)
 
-            elif self.resized:
+            elif self.resized is not None:
                 cv2.imshow("Feed", self.resized)
                 cv2.waitKey(1)
 
