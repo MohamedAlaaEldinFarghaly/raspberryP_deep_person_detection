@@ -10,9 +10,9 @@ Original file is located at
 # Python
 import logging
 import time
-import picamera
-from picamera.array import PiRGBArray
-from picamera import PiCamera
+# import picamera
+# from picamera.array import PiRGBArray
+# from picamera import PiCamera
 import numpy as np
 from PIL import Image # MAF
 import cv2  # MAF
@@ -114,12 +114,12 @@ def run_stationary_detect(labels, model_cls, rotation):
                         filtered_prediction = prediction
 
                     overlay = model.create_overlay(frame, filtered_prediction)
-                    capture_manager.overlay = overlay
                     im = Image.frombytes("RGB", (320, 320), overlay)
                     np_image = np.array(im)
                     print("func2")
                     print(type(overlay))
                     print(type(np_image))
+                    capture_manager.overlay = np_image
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
@@ -183,7 +183,7 @@ class WebcamVideoStream:
                 return
 
             # otherwise, read the next frame from the stream
-            cv2.imshow("Feed", self.frame)
+            cv2.imshow("Feed", self.overlay)
             cv2.waitKey(1)
 
     def read(self):
