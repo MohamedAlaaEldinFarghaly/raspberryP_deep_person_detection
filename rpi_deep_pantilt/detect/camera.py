@@ -112,13 +112,12 @@ def run_stationary_detect(labels, model_cls, rotation):
                         filtered_prediction = prediction
 
                     overlay = model.create_overlay(frame, filtered_prediction)
-                    print(type(overlay))
-                    # capture_manager.overlay_buff = overlay
+                    capture_manager.overlay = overlay
 
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
-                    print(fps)
+                    print("why?!")
                     logging.debug(f'FPS: {fps}')
 
                     fps_counter = 0
@@ -139,6 +138,7 @@ class WebcamVideoStream:
         # initialize the variable used to indicate if the thread should
         # be stopped
         self.stopped = False
+        self.overlay = None
 
     def start(self):
         # start the thread to read frames from the video stream
