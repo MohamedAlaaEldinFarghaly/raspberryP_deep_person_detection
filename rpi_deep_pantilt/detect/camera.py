@@ -125,9 +125,6 @@ class WebcamVideoStream:
         
         # initialize the thread name
 		self.name = name
-    
-    self.resolution = resolution
-
 		# initialize the variable used to indicate if the thread should
 		# be stopped
 		self.stopped = False
@@ -151,7 +148,7 @@ class WebcamVideoStream:
 
 	def read(self):
 		# return the frame most recently read
-		return cv2.resize(self.frame,self.resolution)
+		return cv2.resize(self.frame,(320,320))
 
 	def stop(self):
 		# indicate that the thread should be stopped
