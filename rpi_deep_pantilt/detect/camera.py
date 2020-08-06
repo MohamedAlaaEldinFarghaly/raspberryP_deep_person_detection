@@ -72,7 +72,8 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
             overlay = model.create_overlay(frame, prediction)
             print(type(overlay))
             print("why?!")
-            # capture_manager.overlay_buff = overlay
+            capture_manager.overlay_buff = overlay
+            print("func1")
             if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                 fps_counter += 1
                 fps = fps_counter / (time.time() - start_time)
@@ -115,7 +116,7 @@ def run_stationary_detect(labels, model_cls, rotation):
 
                     overlay = model.create_overlay(frame, filtered_prediction)
                     capture_manager.overlay = overlay
-                    print(label_idxs)
+                    print("func2")
 
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
