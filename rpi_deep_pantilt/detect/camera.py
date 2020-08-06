@@ -14,7 +14,7 @@ import picamera
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import numpy as np
-import cv2  #MAF
+import cv2  # MAF
 from threading import Thread
 
 logging.basicConfig()
@@ -24,30 +24,29 @@ RESOLUTION = (320, 320)
 
 logging.basicConfig()
 
+
 # https://github.com/dtreskunov/rpi-sensorium/commit/40c6f3646931bf0735c5fe4579fa89947e96aed7
 
 
 def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resolution=RESOLUTION):
-
     model = model_cls()
 
-    capture_manager = WebcamVideoStream(resolution=RESOLUTION)     ###
+    capture_manager = WebcamVideoStream()  ###
     capture_manager.start()
-    #capture_manager.start_overlay()
+    # capture_manager.start_overlay()
 
     label_idxs = model.label_to_category_index(labels)
     start_time = time.time()
     fps_counter = 0
     while not capture_manager.stopped:
-        if capture_manager.grabbed:                     ###
-            frame = capture_manager.read()         
+        if capture_manager.grabbed:  ###
+            frame = capture_manager.read()
             prediction = model.predict(frame)
 
             if not len(prediction.get('detection_boxes')):
                 continue
 
             if any(item in label_idxs for item in prediction.get('detection_classes')):
-
                 tracked = (
                     (i, x) for i, x in
                     enumerate(prediction.get('detection_classes'))
@@ -71,13 +70,14 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
 
             overlay = model.create_overlay(frame, prediction)
             print(type(overlay))
-            #capture_manager.overlay_buff = overlay
+            # capture_manager.overlay_buff = overlay
             if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                 fps_counter += 1
                 fps = fps_counter / (time.time() - start_time)
                 logging.debug(f'FPS: {fps}')
                 fps_counter = 0
                 start_time = time.time()
+
 
 def run_stationary_detect(labels, model_cls, rotation):
     '''
@@ -102,18 +102,18 @@ def run_stationary_detect(labels, model_cls, rotation):
                 if not len(prediction.get('detection_boxes')):
                     continue
                 if any(item in label_idxs for item in prediction.get('detection_classes')):
-                    
+
                     # Not all models will need to implement a filter_tracked() interface
                     # For example, FaceSSD only allows you to track 1 class (faces) and does not implement this method
                     try:
                         filtered_prediction = model.filter_tracked(
-                        prediction, label_idxs)
+                            prediction, label_idxs)
                     except AttributeError:
                         filtered_prediction = prediction
 
                     overlay = model.create_overlay(frame, filtered_prediction)
                     print(type(overlay))
-                    #capture_manager.overlay_buff = overlay
+                    # capture_manager.overlay_buff = overlay
 
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
@@ -124,14 +124,14 @@ def run_stationary_detect(labels, model_cls, rotation):
     except KeyboardInterrupt:
         capture_manager.stop()
 
-        
+
 class WebcamVideoStream:
-    def __init__(self, src=0, name="WebcamVideoStream" ):
+    def __init__(self, src=0, name="WebcamVideoStream"):
         # initialize the video camera stream and read the first frame
         # from the stream
         self.stream = cv2.VideoCapture(src)
         (self.grabbed, self.frame) = self.stream.read()
-        
+
         # initialize the thread name
         self.name = name
         # initialize the variable used to indicate if the thread should
@@ -143,18 +143,18 @@ class WebcamVideoStream:
         t = Thread(target=self.update, name=self.name, args=())
         t.daemon = True
         t.start()
-        
+
         return self
-    
+
     def start_overlay(self):
         # start the thread to display frames from the video stream
         t = Thread(target=self.display, name=self.name, args=())
         t.daemon = True
         t.start()
-        
+
         logging.debug('Starting Raspberry Pi usb Camera')
         return self
-    
+
     def update(self):
         # keep looping infinitely until the thread is stopped
         while True:
@@ -164,7 +164,7 @@ class WebcamVideoStream:
 
             # otherwise, read the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
-            
+
     def display(self):
         # keep looping infinitely until the thread is stopped
         while True:
@@ -178,15 +178,17 @@ class WebcamVideoStream:
             # otherwise, read the next frame from the stream
             cv2.imshow("Feed", self.frame)
             cv2.waitKey(1)
-            
+
     def read(self):
         # return the frame most recently read
-        self.resized =  cv2.resize(self.frame,(320,320))
+        self.resized = cv2.resize(self.frame, (320, 320))
         return self.resized
 
     def stop(self):
         # indicate that the thread should be stopped
         self.stopped = True
+
+
 """
 def _monkey_patch_picamera(overlay):
     original_send_buffer = picamera.mmalobj.MMALPortPool.send_buffer
