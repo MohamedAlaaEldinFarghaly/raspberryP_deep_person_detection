@@ -76,9 +76,9 @@ def run_stationary_detect(labels, model_cls, rotation):
     '''
     model = model_cls()
 
-    capture_manager = WebcamVideoStream(resolution=RESOLUTION)
+    capture_manager = WebcamVideoStream()
     capture_manager.start()
-    #capture_manager.start_overlay()
+    capture_manager.start_overlay()
 
     label_idxs = model.label_to_category_index(labels)
     start_time = time.time()
@@ -117,7 +117,7 @@ def run_stationary_detect(labels, model_cls, rotation):
 
         
 class WebcamVideoStream:
-	def __init__(self, src=0, name="WebcamVideoStream",resolution=(320,320) ):
+	def __init__(self, src=0, name="WebcamVideoStream" ):
 		# initialize the video camera stream and read the first frame
 		# from the stream
 		self.stream = cv2.VideoCapture(src)
@@ -134,8 +134,16 @@ class WebcamVideoStream:
 		t = Thread(target=self.update, name=self.name, args=())
 		t.daemon = True
 		t.start()
+        logging.debug('Starting Raspberry Pi usb Camera')
 		return self
-
+    
+	def start_overlay(self):
+		# start the thread to display frames from the video stream
+		t = Thread(target=self.display, name=self.name, args=())
+		t.daemon = True
+		t.start()
+		return self
+    
 	def update(self):
 		# keep looping infinitely until the thread is stopped
 		while True:
@@ -145,7 +153,21 @@ class WebcamVideoStream:
 
 			# otherwise, read the next frame from the stream
 			(self.grabbed, self.frame) = self.stream.read()
+            
+	def display(self):
+		# keep looping infinitely until the thread is stopped
+		while True:
+			# if the thread indicator variable is set, stop the thread
+			if self.stopped:
+                logging.debug('Stopping Raspberry Pi usb Camera')
+                cv2.destroyWindow("Feed")
+                self.stream.release()
+				return
 
+			# otherwise, read the next frame from the stream
+			cv2.imshow("Feed", self.frame)
+            cv2.waitKey(1)
+            
 	def read(self):
 		# return the frame most recently read
 		return cv2.resize(self.frame,(320,320))
