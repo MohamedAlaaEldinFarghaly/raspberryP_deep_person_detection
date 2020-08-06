@@ -74,8 +74,8 @@ def run_pantilt_detect(center_x, center_y, labels, model_cls, rotation, resoluti
             im = Image.frombytes("RGB", (320, 320), overlay)
             np_image = np.array(im)
             capture_manager.overlay = np_image
-            #LOGLEVEL is logging.DEBUG and
-            if  (time.time() - start_time) > 1:
+
+            if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                 fps_counter += 1
                 fps = fps_counter / (time.time() - start_time)
                 logging.debug(f'FPS: {fps}')
@@ -119,7 +119,7 @@ def run_stationary_detect(labels, model_cls, rotation):
                     im = Image.frombytes("RGB", (320, 320), overlay)
                     np_image = np.array(im)
                     capture_manager.overlay = np_image
-                if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
+                if (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
                     logging.debug(f'FPS: {fps}')
