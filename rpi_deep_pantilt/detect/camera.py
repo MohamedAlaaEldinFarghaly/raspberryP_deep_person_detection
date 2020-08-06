@@ -134,7 +134,7 @@ class WebcamVideoStream:
 		t = Thread(target=self.update, name=self.name, args=())
 		t.daemon = True
 		t.start()
-        logging.debug('Starting Raspberry Pi usb Camera')
+        
 		return self
     
 	def start_overlay(self):
@@ -142,7 +142,9 @@ class WebcamVideoStream:
 		t = Thread(target=self.display, name=self.name, args=())
 		t.daemon = True
 		t.start()
-		return self
+        
+		logging.debug('Starting Raspberry Pi usb Camera')
+        return self
     
 	def update(self):
 		# keep looping infinitely until the thread is stopped
@@ -170,7 +172,8 @@ class WebcamVideoStream:
             
 	def read(self):
 		# return the frame most recently read
-		return cv2.resize(self.frame,(320,320))
+        self.resized =  cv2.resize(self.frame,(320,320))
+		return self.resized
 
 	def stop(self):
 		# indicate that the thread should be stopped
