@@ -117,7 +117,7 @@ def run_stationary_detect(labels, model_cls, rotation):
                     im = Image.frombytes("RGB", (320, 320), overlay)
                     np_image = np.array(im)
 
-                    print(np.shape(self.overlay))
+                    print(np.shape(capture_manager.overlay))
                     capture_manager.overlay = np_image
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
