@@ -183,9 +183,14 @@ class WebcamVideoStream:
                 return
 
             # otherwise, read the next frame from the stream
-            # cv2.imshow("Feed", self.overlay)
-            # cv2.waitKey(1)
-            print(self.overlay)
+            if self.overlay:
+                cv2.imshow("Feed", self.overlay)
+                cv2.waitKey(1)
+                print(np.shape(self.overlay))
+            else:
+                cv2.imshow("Feed", self.resized)
+                cv2.waitKey(1)
+
     def read(self):
         # return the frame most recently read
         self.resized = cv2.resize(self.frame, (320, 320))
