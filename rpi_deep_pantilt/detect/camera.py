@@ -118,7 +118,9 @@ def run_stationary_detect(labels, model_cls, rotation):
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
+                    print(fps)
                     logging.debug(f'FPS: {fps}')
+
                     fps_counter = 0
                     start_time = time.time()
     except KeyboardInterrupt:
@@ -176,12 +178,13 @@ class WebcamVideoStream:
                 return
 
             # otherwise, read the next frame from the stream
-            cv2.imshow("Feed", self.frame)
+            cv2.imshow("Feed", self.resized)
             cv2.waitKey(1)
 
     def read(self):
         # return the frame most recently read
         self.resized = cv2.resize(self.frame, (320, 320))
+        print(type(self.frame))
         return self.resized
 
     def stop(self):
