@@ -116,9 +116,8 @@ def run_stationary_detect(labels, model_cls, rotation):
                     overlay = model.create_overlay(frame, filtered_prediction)
                     im = Image.frombytes("RGB", (320, 320), overlay)
                     np_image = np.array(im)
-                    print("func2")
-                    print(type(overlay))
-                    print(type(np_image))
+
+                    print(np.shape(self.overlay))
                     capture_manager.overlay = np_image
                 if LOGLEVEL is logging.DEBUG and (time.time() - start_time) > 1:
                     fps_counter += 1
@@ -144,7 +143,7 @@ class WebcamVideoStream:
         # be stopped
         self.stopped = False
         self.overlay = None
-
+        self.resized = None
     def start(self):
         # start the thread to read frames from the video stream
         t = Thread(target=self.update, name=self.name, args=())
@@ -186,8 +185,8 @@ class WebcamVideoStream:
             if self.overlay:
                 cv2.imshow("Feed", self.overlay)
                 cv2.waitKey(1)
-                print(np.shape(self.overlay))
-            else:
+
+            elif self.resized:
                 cv2.imshow("Feed", self.resized)
                 cv2.waitKey(1)
 
