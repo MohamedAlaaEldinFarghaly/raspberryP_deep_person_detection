@@ -172,7 +172,7 @@ class WebcamVideoStream:
             # otherwise, read the next frame from the stream
             (self.grabbed, frame) = self.stream.read()
             h, w = frame.shape[:2]
-            self.frame = frame[0:int(h/2), 0:int(w/2)]
+            self.frame = frame[0:int(h/2), 0:int(w/2):w-1]
 
     def display(self):
         # keep looping infinitely until the thread is stopped
