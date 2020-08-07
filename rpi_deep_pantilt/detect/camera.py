@@ -142,6 +142,7 @@ class WebcamVideoStream:
         self.stopped = False
         self.overlay = None
         self.resized = None
+        self.rgb = None
 
     def start(self):
         # start the thread to read frames from the video stream
@@ -192,7 +193,8 @@ class WebcamVideoStream:
     def read(self):
         # return the frame most recently read
         self.resized = cv2.resize(self.frame, (320, 320))
-        return self.resized
+        self.rgb = cv2.cvtColor(self.resized, cv2.COLOR_BGR2RGB)
+        return self.rgb
 
     def stop(self):
         # indicate that the thread should be stopped
