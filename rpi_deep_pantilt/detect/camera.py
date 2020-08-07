@@ -118,7 +118,8 @@ def run_stationary_detect(labels, model_cls, rotation):
                     overlay = model.create_overlay(frame, filtered_prediction)
                     im = Image.frombytes("RGB", (320, 320), overlay)
                     np_image = np.array(im)
-                    capture_manager.overlay = np_image
+                    rgb = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
+                    capture_manager.overlay = rgb
                 if (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
