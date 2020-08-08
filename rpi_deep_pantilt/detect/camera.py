@@ -107,11 +107,13 @@ def run_stationary_detect(labels, model_cls, rotation):
                 roi_height = int(height / n_rows)
                 roi_width = int(width / n_images_per_row)
                 images = [0, 0, 0, 0]
+                i = 0
                 for x in range(0, n_rows):
                     for y in range(0, n_images_per_row):
 
                         tmp_image = frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width]
-                        images.append(tmp_image)
+                        images[i] = tmp_image
+                        i = i + 1
                 f = 0
                 for i in range(n_rows*n_images_per_row):
                     resized = cv2.resize(images[i], (320, 320))
