@@ -134,7 +134,7 @@ def run_stationary_detect(labels, model_cls, rotation):
                         overlay = model.create_overlay(frame, filtered_prediction)
                         im = Image.frombytes("RGB", (roi_height, roi_width), overlay)
                         np_image = np.array(im)
-                        rgb[i].append = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
+                        rgb.append = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
 
                 for x in range(0, n_rows):
                     for y in range(0, n_images_per_row):
