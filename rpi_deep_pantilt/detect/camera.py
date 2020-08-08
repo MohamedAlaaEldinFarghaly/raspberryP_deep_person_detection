@@ -101,25 +101,45 @@ def run_stationary_detect(labels, model_cls, rotation):
         while not capture_manager.stopped:
             if capture_manager.grabbed:
                 frame = capture_manager.read()
-                prediction = model.predict(frame)
+                n_rows = 2
+                n_images_per_row = 2
+                height, width, ch = frame.shape
+                roi_height = height / n_rows
+                roi_width = width / n_images_per_row
 
-                if not len(prediction.get('detection_boxes')):
-                    continue
-                if any(item in label_idxs for item in prediction.get('detection_classes')):
+                images = []
 
-                    # Not all models will need to implement a filter_tracked() interface
-                    # For example, FaceSSD only allows you to track 1 class (faces) and does not implement this method
-                    try:
-                        filtered_prediction = model.filter_tracked(
-                            prediction, label_idxs)
-                    except AttributeError:
-                        filtered_prediction = prediction
+                for x in range(0, n_rows):
+                    for y in range(0, n_images_per_row):
+                        tmp_image = frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width]
+                        images.append(tmp_image)
+                rgb = []
+                for i in range(n_rows*n_images_per_row):
+                    resized = cv2.resize(images[i], (320, 320))
+                    image = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+                    prediction = model.predict(image)
+                    if not len(prediction.get('detection_boxes')):
+                        continue
+                    if any(item in label_idxs for item in prediction.get('detection_classes')):
 
-                    overlay = model.create_overlay(frame, filtered_prediction)
-                    im = Image.frombytes("RGB", (320, 320), overlay)
-                    np_image = np.array(im)
-                    rgb = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
-                    capture_manager.overlay = rgb
+                        # Not all models will need to implement a filter_tracked() interface
+                        # For example, FaceSSD only allows you to track 1 class (faces) and does not implement this method
+                        try:
+                            filtered_prediction = model.filter_tracked(
+                                prediction, label_idxs)
+                        except AttributeError:
+                            filtered_prediction = prediction
+
+                        overlay = model.create_overlay(frame, filtered_prediction)
+                        im = Image.frombytes("RGB", (roi_height, roi_width), overlay)
+                        np_image = np.array(im)
+                        rgb[i].append = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
+
+                for x in range(0, n_rows):
+                    for y in range(0, n_images_per_row):
+                        frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width] = rgb[i]
+                capture_manager.overlay = frame
+
                 if (time.time() - start_time) > 1:
                     fps_counter += 1
                     fps = fps_counter / (time.time() - start_time)
@@ -171,8 +191,6 @@ class WebcamVideoStream:
 
             # otherwise, read the next frame from the stream
             (self.grabbed, frame) = self.stream.read()
-            h, w = frame.shape[:2]
-            self.frame = frame[0:int(h/2), int(w/2):w-1]
 
     def display(self):
         # keep looping infinitely until the thread is stopped
@@ -195,9 +213,8 @@ class WebcamVideoStream:
 
     def read(self):
         # return the frame most recently read
-        self.resized = cv2.resize(self.frame, (320, 320))
-        self.rgb = cv2.cvtColor(self.resized, cv2.COLOR_BGR2RGB)
-        return self.rgb
+
+        return self.frame
 
     def stop(self):
         # indicate that the thread should be stopped
