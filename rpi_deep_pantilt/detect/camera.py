@@ -106,22 +106,20 @@ def run_stationary_detect(labels, model_cls, rotation):
                 height, width, ch = frame.shape
                 roi_height = int(height / n_rows)
                 roi_width = int(width / n_images_per_row)
-
-                images = []
-
+                images = [0, 0, 0, 0]
                 for x in range(0, n_rows):
                     for y in range(0, n_images_per_row):
 
                         tmp_image = frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width]
                         images.append(tmp_image)
-
+                f = 0
                 for i in range(n_rows*n_images_per_row):
                     resized = cv2.resize(images[i], (320, 320))
                     image = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
                     prediction = model.predict(image)
                     if not len(prediction.get('detection_boxes')):
-                        continue
-                    if any(item in label_idxs for item in prediction.get('detection_classes')):
+                        f = f + 1
+                    elif any(item in label_idxs for item in prediction.get('detection_classes')):
 
                         # Not all models will need to implement a filter_tracked() interface
                         # For example, FaceSSD only allows you to track 1 class (faces) and does not implement this method
@@ -135,11 +133,13 @@ def run_stationary_detect(labels, model_cls, rotation):
                         im = Image.frombytes("RGB", (roi_width, roi_height), overlay)
                         np_image = np.array(im)
                         images[i] = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
-                i = 0
+                if not f:
+                    continue
+                k = 0
                 for x in range(0, n_rows):
                     for y in range(0, n_images_per_row):
-                        frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width] = images[i]
-                        i = i + 1
+                        frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width] = images[k]
+                        k = k + 1
                 capture_manager.overlay = frame
 
                 if (time.time() - start_time) > 1:
