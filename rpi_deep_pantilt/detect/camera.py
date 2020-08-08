@@ -111,10 +111,10 @@ def run_stationary_detect(labels, model_cls, rotation):
 
                 for x in range(0, n_rows):
                     for y in range(0, n_images_per_row):
-                        print(x,y,roi_height,roi_width)
+
                         tmp_image = frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width]
                         images.append(tmp_image)
-                rgb = []
+
                 for i in range(n_rows*n_images_per_row):
                     resized = cv2.resize(images[i], (320, 320))
                     image = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
@@ -134,11 +134,11 @@ def run_stationary_detect(labels, model_cls, rotation):
                         overlay = model.create_overlay(frame, filtered_prediction)
                         im = Image.frombytes("RGB", (roi_width, roi_height), overlay)
                         np_image = np.array(im)
-                        rgb.append(cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB))
+                        images[i] = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
                 i = 0
                 for x in range(0, n_rows):
                     for y in range(0, n_images_per_row):
-                        frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width] = rgb[i]
+                        frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width] = images[i]
                         i = i + 1
                 capture_manager.overlay = frame
 
