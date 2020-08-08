@@ -101,21 +101,18 @@ def run_stationary_detect(labels, model_cls, rotation):
         while not capture_manager.stopped:
             if capture_manager.grabbed:
                 frame = capture_manager.read()
-                n_rows = 2
-                n_images_per_row = 2
                 height, width, ch = frame.shape
-                roi_height = int(height / n_rows)
-                roi_width = int(width / n_images_per_row)
+                roi_height = int(height / 2)
+                roi_width = int(width / 2)
                 images = [0, 0, 0, 0]
                 i = 0
-                for x in range(0, n_rows):
-                    for y in range(0, n_images_per_row):
-
+                for x in range(0, 2):
+                    for y in range(0, 2):
                         tmp_image = frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width]
                         images[i] = tmp_image
                         i = i + 1
                 f = 0
-                for i in range(n_rows*n_images_per_row):
+                for i in range(4):
                     resized = cv2.resize(images[i], (320, 320))
                     image = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
                     prediction = model.predict(image)
@@ -135,13 +132,16 @@ def run_stationary_detect(labels, model_cls, rotation):
                         im = Image.frombytes("RGB", (roi_width, roi_height), overlay)
                         np_image = np.array(im)
                         images[i] = cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB)
-                if not f:
+
+                if f == 0:
                     continue
+
                 k = 0
-                for x in range(0, n_rows):
-                    for y in range(0, n_images_per_row):
+                for x in range(0, 2):
+                    for y in range(0, 2):
                         frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width] = images[k]
                         k = k + 1
+                        print(k)
                 capture_manager.overlay = frame
 
                 if (time.time() - start_time) > 1:
