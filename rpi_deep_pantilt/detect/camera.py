@@ -111,6 +111,7 @@ def run_stationary_detect(labels, model_cls, rotation):
 
                 for x in range(0, n_rows):
                     for y in range(0, n_images_per_row):
+                        print(x,y,roi_height,roi_width)
                         tmp_image = frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width]
                         images.append(tmp_image)
                 rgb = []
