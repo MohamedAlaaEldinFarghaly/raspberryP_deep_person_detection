@@ -135,10 +135,11 @@ def run_stationary_detect(labels, model_cls, rotation):
                         im = Image.frombytes("RGB", (roi_width, roi_height), overlay)
                         np_image = np.array(im)
                         rgb.append(cv2.cvtColor(np_image, cv2.COLOR_BGR2RGB))
-
+                i = 0
                 for x in range(0, n_rows):
                     for y in range(0, n_images_per_row):
                         frame[x * roi_height:(x + 1) * roi_height, y * roi_width:(y + 1) * roi_width] = rgb[i]
+                        i = i + 1
                 capture_manager.overlay = frame
 
                 if (time.time() - start_time) > 1:
