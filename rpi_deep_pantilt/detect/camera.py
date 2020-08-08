@@ -104,8 +104,8 @@ def run_stationary_detect(labels, model_cls, rotation):
                 n_rows = 2
                 n_images_per_row = 2
                 height, width, ch = frame.shape
-                roi_height = height / n_rows
-                roi_width = width / n_images_per_row
+                roi_height = int(height / n_rows)
+                roi_width = int(width / n_images_per_row)
 
                 images = []
 
