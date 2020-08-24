@@ -19,4 +19,4 @@ use--> $
     pip install opencv-contrib-python==4.1.0.25
 
 # the performance and frame rate is the same (I applied threading too)
-
+I edited Camera.py file only
