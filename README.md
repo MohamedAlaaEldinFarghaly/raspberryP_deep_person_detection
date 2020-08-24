@@ -6,7 +6,7 @@
 
 [![Documentation
 Status](https://readthedocs.org/projects/rpi-deep-pantilt/badge/?version=latest)](https://rpi-deep-pantilt.readthedocs.io/en/latest/?badge=latest)
-# Read this readme file first the readme file in usb-mod branch where you will find my original modification as Mohamed Alaa Elding Fargaly Ahmed
+# Read this readme file first the readme file in usb-mod branch where you will find my original modification as Mohamed Alaa Eldin Fargaly Ahmed
 # READ THIS FIRST!
 
 A detailed walk-through is available in [Real-time Object Tracking with TensorFlow, Raspberry Pi, and Pan-tilt HAT](https://medium.com/@grepLeigh/real-time-object-tracking-with-tensorflow-raspberry-pi-and-pan-tilt-hat-2aeaef47e134).
