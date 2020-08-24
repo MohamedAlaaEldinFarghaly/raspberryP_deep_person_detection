@@ -15,6 +15,8 @@ Status](https://readthedocs.org/projects/rpi-deep-pantilt/badge/?version=latest)
 
 # I created this Bracnh usbcam-mod to make this PROJECT work on usb-connected web camera (using opencv library)
 to install opencv on raspberry pi 
+use--> $
     pip install opencv-contrib-python==4.1.0.25
 
-# the performance and frame rate is the same ( I applied threading too )
+# the performance and frame rate is the same (I applied threading too)
+
